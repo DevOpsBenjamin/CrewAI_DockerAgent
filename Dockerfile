@@ -23,23 +23,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -s /bin/bash vscode && \
-    echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-WORKDIR /workspace
-ENV HOME=/home/vscode
-ENV PATH="$HOME/.local/bin:$PATH"
-
-# Install uv CLI as vscode user
-USER vscode
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/home/vscode/.uv/bin:${PATH}"
-
-# Use uv to install crewai
-RUN uv tool install crewai
-
-# Back to root for system-wide installs
-USER root
+# Install uv system-wide so runtime mounts don't hide it
+RUN curl -LsSf https://astral.sh/uv/install.sh -o /tmp/uv.sh \
+ && UV_INSTALL_DIR=/usr/local/bin UV_NO_MODIFY_PATH=1 sh /tmp/uv.sh \
+ && rm /tmp/uv.sh \
+ && uv --version
 
 # Install code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
@@ -53,11 +41,21 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 # -----------------------------------------------------
 
+
+# --- Add User vscode ---
+RUN useradd -m -s /bin/bash vscode && \
+    echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /workspace
+ENV HOME=/home/vscode
+ENV PATH="$HOME/.local/bin:$PATH"
+# -----------------------------------------------------
+
 # Expose default code-server port
 EXPOSE 8080
 
-
 USER vscode
+
 SHELL ["/bin/bash", "-c"]
 
 # Entrypoint script: run init.sh (can start code-server inside)

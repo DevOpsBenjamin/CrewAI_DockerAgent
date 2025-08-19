@@ -11,11 +11,13 @@ fi
 : "${LOCAL_PORT:?ERROR: set LOCAL_PORT}"
 
 # Best-effort ownership (safe if already owned)
-chown -R vscode:vscode /workspace 2>/dev/null || true
-chown -R vscode:vscode /home/vscode 2>/dev/null || true
+sudo chown -R vscode:vscode /workspace
+sudo chown -R vscode:vscode /home/vscode
 
 echo "Starting code-server on 127.0.0.1:${LOCAL_PORT}"
 code-server /workspace --bind-addr "127.0.0.1:${LOCAL_PORT}" &
+
+uv tool install crewai
 
 # Wait until code-server is listening
 until nc -z 127.0.0.1 "${LOCAL_PORT}"; do sleep 1; done
