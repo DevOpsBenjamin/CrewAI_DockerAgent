@@ -1,0 +1,7 @@
+# Env & secrets
+.env
+volumes/.env
+**/.ssh/
+**/id_rsa*
+*.pem
+*.key

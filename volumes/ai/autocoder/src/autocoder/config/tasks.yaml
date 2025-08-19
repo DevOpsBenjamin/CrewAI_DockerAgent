@@ -1,0 +1,6 @@
+execute_command_task:
+  description: >
+    Execute the shell command: {command}
+  expected_output: >
+    The output of the shell command.
+  agent: command_executor

@@ -1,0 +1,1 @@
+docker exec -it --user vscode crewai-run /bin/bash
