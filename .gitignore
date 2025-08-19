@@ -1,3 +1,8 @@
+vscode/*
+!vscode/init.sh
+!vscode/.config/
+!vscode/.config/*
+
 # Env & secrets
 .env
 volumes/.env

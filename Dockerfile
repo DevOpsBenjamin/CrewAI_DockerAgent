@@ -30,13 +30,6 @@ WORKDIR /workspace
 ENV HOME=/home/vscode
 ENV PATH="$HOME/.local/bin:$PATH"
 
-COPY init.sh /home/vscode/init.sh
-COPY gate.sh /home/vscode/gate.sh
-RUN chmod +x /home/vscode/init.sh 
-RUN chmod +x /home/vscode/gate.sh 
-RUN chown vscode:vscode /home/vscode/init.sh 
-RUN chown vscode:vscode /home/vscode/gate.sh
-
 # Install uv CLI as vscode user
 USER vscode
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -63,12 +56,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 # Expose default code-server port
 EXPOSE 8080
 
-# Ensure code-server config dir exists before copying
-RUN mkdir -p /home/vscode/.config/code-server && chown -R vscode:vscode /home/vscode/.config
-COPY config.yaml /home/vscode/.config/code-server/config.yaml
-RUN chown vscode:vscode /home/vscode/.config/code-server/config.yaml
 
-
+USER vscode
 SHELL ["/bin/bash", "-c"]
 
 # Entrypoint script: run init.sh (can start code-server inside)
